@@ -5,7 +5,7 @@
 		<input type="hidden" value="<?php echo $media['position']; ?>" name="data[Media][<?php echo $media['id']; ?>]">
 
 		<div class="visu"><?php echo $this->Html->image($media['icon']); ?></div>
-		<?php echo basename($media['file']); ?>
+		<span class="name" data-href="<?php echo $this->Html->url(array('action'=>'rename',$media['id'])); ?>"><?php echo $media['name']; ?></span>
 
 		<div class="actions">
 			<?php if($thumbID !== false && $media['id'] !== $thumbID && $media['type'] == 'pic'): ?>

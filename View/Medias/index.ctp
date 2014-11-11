@@ -151,6 +151,25 @@ jQuery(function(){
        }
 	});
 
+	$('span.name').live('click',function(e){
+		e.preventDefault();
+		elem = $(this);
+		if (elem.find('input').length)
+			return true;
+		var value = elem.html();
+		var t = elem.text();
+        elem.text('').append($('<input />',{'value' : t}).val(t));
+        var input = elem.find('input');
+        input.focus().focusout(function() {
+        	var value2 = input.val();
+        	if (value2 == "")
+        		return elem.text(value);
+	        $.post(elem.attr('data-href'), {name:value2}, function(){
+				elem.text(value2);
+			});
+		});
+	});
+
 	$('a.del').live('click',function(e){
 		e.preventDefault();
 		elem = $(this);

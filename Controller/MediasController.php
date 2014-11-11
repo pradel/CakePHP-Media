@@ -20,7 +20,7 @@ class MediasController extends AppController{
         parent::beforeFilter();
         $this->layout = 'uploader';
         if(in_array('Security', $this->components)){
-            $this->Security->unlockedActions = array('upload', 'order','index','delete','thumb');
+            $this->Security->unlockedActions = array('upload', 'rename', 'order','index','delete','thumb');
         }
     }
 
@@ -62,7 +62,8 @@ class MediasController extends AppController{
         $media = $this->Media->save(array(
             'ref'    => $ref,
             'ref_id' => $ref_id,
-            'file'   => $_FILES['file']
+            'file'   => $_FILES['file'],
+            'name'   => basename($_FILES['file']['name'])
         ));
         if(!$media){
             echo json_encode(array('error' => $this->Media->error));
@@ -77,6 +78,26 @@ class MediasController extends AppController{
         $this->set(compact('media', 'thumbID', 'editor', 'id'));
         $this->layout = 'json';
         $this->render('media');
+        return true;
+    }
+
+    /**
+    * Rename (Ajax)
+    **/
+    public function rename($id){
+        $this->autoRender = false;
+        $media = $this->Media->findById($id, array('ref','ref_id'));
+        if(empty($media)){
+            throw new NotFoundException();
+        }
+        if(!$this->canUploadMedias($media['Media']['ref'], $media['Media']['ref_id'])){
+            throw new ForbiddenException();
+        }
+        if (!isset($this->request->data['name']) || empty($this->request->data['name'])) {
+            throw new BadRequestException();
+        }
+        $this->Media->id = $id;
+        $this->Media->saveField('name',$this->request->data['name']);
         return true;
     }
 
